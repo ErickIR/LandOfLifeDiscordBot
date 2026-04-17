@@ -32,58 +32,28 @@ func parseHourOption(options map[string]any, name string) (domain.Hour, error) {
 	switch value {
 	case "1", "01", "0100", "01:00":
 		return domain.Hour0100, nil
-	case "3", "03", "0300", "03:00":
+	case "2", "03", "0300", "03:00":
 		return domain.Hour0300, nil
-	case "5", "05", "0500", "05:00":
+	case "3", "05", "0500", "05:00":
 		return domain.Hour0500, nil
-	case "7", "07", "0700", "07:00":
+	case "4", "07", "0700", "07:00":
 		return domain.Hour0700, nil
-	case "9", "09", "0900", "09:00":
+	case "5", "09", "0900", "09:00":
 		return domain.Hour0900, nil
-	case "11", "1100", "11:00":
+	case "6", "1100", "11:00":
 		return domain.Hour1100, nil
-	case "13", "1300", "13:00":
+	case "7", "1300", "13:00":
 		return domain.Hour1300, nil
-	case "15", "1500", "15:00":
+	case "8", "1500", "15:00":
 		return domain.Hour1500, nil
-	case "17", "1700", "17:00":
+	case "9", "1700", "17:00":
 		return domain.Hour1700, nil
-	case "19", "1900", "19:00":
+	case "10", "1900", "19:00":
 		return domain.Hour1900, nil
-	case "21", "2100", "21:00":
+	case "11", "2100", "21:00":
 		return domain.Hour2100, nil
-	case "23", "2300", "23:00":
+	case "12", "2300", "23:00":
 		return domain.Hour2300, nil
-	}
-
-	parsed, err := strconv.Atoi(value)
-	if err == nil {
-		switch parsed {
-		case 1:
-			return domain.Hour0100, nil
-		case 3:
-			return domain.Hour0300, nil
-		case 5:
-			return domain.Hour0500, nil
-		case 7:
-			return domain.Hour0700, nil
-		case 9:
-			return domain.Hour0900, nil
-		case 11:
-			return domain.Hour1100, nil
-		case 13:
-			return domain.Hour1300, nil
-		case 15:
-			return domain.Hour1500, nil
-		case 17:
-			return domain.Hour1700, nil
-		case 19:
-			return domain.Hour1900, nil
-		case 21:
-			return domain.Hour2100, nil
-		case 23:
-			return domain.Hour2300, nil
-		}
 	}
 
 	return 0, fmt.Errorf("invalid hour value %q", raw)
@@ -104,17 +74,4 @@ func parseChannelOption(options map[string]any, name string) (domain.Channel, er
 		return 0, fmt.Errorf("channel must be between 1 and 7")
 	}
 	return domain.Channel(parsed), nil
-}
-
-func parseOptionalChannelOption(options map[string]any, name string) (domain.Channel, error) {
-	_, ok := options[name]
-	if !ok {
-		return domain.UnknownChannel, nil
-	}
-
-	if parseStringOption(options, name) == "" {
-		return domain.UnknownChannel, nil
-	}
-
-	return parseChannelOption(options, name)
 }

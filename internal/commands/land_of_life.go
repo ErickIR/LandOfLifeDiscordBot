@@ -64,25 +64,79 @@ func (c *LandOfLifeCommand) Definition() bot.CommandDefinition {
 					},
 				},
 			},
+			{
+				Name:        "help",
+				Description: "Get general information about Land of Life and how to use this bot",
+				Type:        bot.OptionTypeSubCommandGroup,
+				Options: []bot.OptionDefinition{
+					{
+						Name:        "info",
+						Description: "Get general information about Land of Life and how to use this bot",
+						Type:        bot.OptionTypeSubCommand,
+					},
+					{
+						Name:        "register",
+						Description: "Get instructions on how to register for a Land of Life slot",
+						Type:        bot.OptionTypeSubCommand,
+					},
+					{
+						Name:        "unregister",
+						Description: "Get instructions on how to unregister from a Land of Life slot",
+						Type:        bot.OptionTypeSubCommand,
+					},
+					{
+						Name:        "status",
+						Description: "Get instructions on how to check the status of Land of Life slots",
+						Type:        bot.OptionTypeSubCommand,
+					},
+				},
+			},
 		},
 	}
 }
 
 func (c *LandOfLifeCommand) Handle(ctx context.Context, in bot.Invocation) bot.Response {
-	if in.SubCommandGroup != "slot" {
-		return bot.Response{Content: "Unknown command group.", Ephemeral: true}
+	if in.SubCommandGroup == "help" {
+		switch in.SubCommand {
+		case "info":
+			return bot.Response{
+				Content:   landOfLifeInformationChart,
+				Ephemeral: false,
+			}
+		case "register":
+			return bot.Response{
+				Content:   registerCommandInstructions,
+				Ephemeral: false,
+			}
+		case "unregister":
+			return bot.Response{
+				Content:   unregisterCommandInstructions,
+				Ephemeral: false,
+			}
+		case "status":
+			return bot.Response{
+				Content:   statusCommandInstructions,
+				Ephemeral: false,
+			}
+		default:
+			return bot.Response{Content: "Unknown help action.", Ephemeral: true}
+		}
 	}
 
-	switch in.SubCommand {
-	case "register":
-		return c.handleRegister(ctx, in)
-	case "unregister":
-		return c.handleUnregister(ctx, in)
-	case "status":
-		return c.handleStatus(ctx, in)
-	default:
-		return bot.Response{Content: "Unknown slot action.", Ephemeral: true}
+	if in.SubCommandGroup == "slot" {
+		switch in.SubCommand {
+		case "register":
+			return c.handleRegister(ctx, in)
+		case "unregister":
+			return c.handleUnregister(ctx, in)
+		case "status":
+			return c.handleStatus(ctx, in)
+		default:
+			return bot.Response{Content: "Unknown slot action.", Ephemeral: true}
+		}
 	}
+
+	return bot.Response{Content: "Unknown command group.", Ephemeral: true}
 }
 
 func (c *LandOfLifeCommand) handleRegister(ctx context.Context, in bot.Invocation) bot.Response {
@@ -203,7 +257,7 @@ func (c *LandOfLifeCommand) handleStatus(ctx context.Context, in bot.Invocation)
 		filteredSlots = append(filteredSlots, slot)
 	}
 
-	lines := []string{fmt.Sprintf("Slots for %s:", date)}
+	lines := []string{fmt.Sprintf("\nSlots for %s:", date)}
 	counted := 0
 	for _, slot := range filteredSlots {
 		if hour == domain.UnknownHour && len(slot.Registrations) == 0 {
@@ -227,6 +281,8 @@ func (c *LandOfLifeCommand) handleStatus(ctx context.Context, in bot.Invocation)
 	if counted == 0 {
 		return bot.Response{Content: "No registrations, feel free to register in any LoL slot.", Ephemeral: false}
 	}
+
+	lines = append(lines, "***Times are displayed based on your timezone***\n")
 
 	response := strings.Join(lines, "\n")
 
