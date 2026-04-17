@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -23,6 +25,8 @@ func NewRegistrationRepository(db *sql.DB) (*sqliteRegistrationRepository, error
 	return repo, nil
 }
 
+var ErrRegistrationAlreadyExists = errors.New("registration already exists")
+
 func (r *sqliteRegistrationRepository) ensureSchema() error {
 	const schema = `CREATE TABLE IF NOT EXISTS registrations (
 		id TEXT PRIMARY KEY,
@@ -37,7 +41,14 @@ func (r *sqliteRegistrationRepository) ensureSchema() error {
 		created_at TEXT NOT NULL
 	);`
 
-	_, err := r.db.Exec(schema)
+	if _, err := r.db.Exec(schema); err != nil {
+		return err
+	}
+
+	const uniqueIndex = `CREATE UNIQUE INDEX IF NOT EXISTS idx_registrations_date_hour_channel_username
+	ON registrations(date, event_hour, username);`
+
+	_, err := r.db.Exec(uniqueIndex)
 	return err
 }
 
@@ -58,6 +69,11 @@ func (r *sqliteRegistrationRepository) Create(ctx context.Context, registration 
 		registration.Pet,
 		registration.CreatedAt.Format(time.RFC3339),
 	)
+	if err != nil {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
+			return ErrRegistrationAlreadyExists
+		}
+	}
 	return err
 }
 

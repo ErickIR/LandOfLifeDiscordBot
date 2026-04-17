@@ -55,7 +55,11 @@ func (s *RegistrationService) Register(ctx context.Context, registration domain.
 		return domain.ErrSlotFull
 	}
 
-	return s.registrationRepo.Create(ctx, registration)
+	if err := s.registrationRepo.Create(ctx, registration); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *RegistrationService) Deregister(ctx context.Context, username string, hour domain.Hour, channel domain.Channel) error {
