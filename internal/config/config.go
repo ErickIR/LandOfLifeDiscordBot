@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"log"
 	"os"
 
@@ -15,12 +16,16 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	env := os.Getenv("ENV")
+	if env == "" {
+		env = "development"
 	}
 
-	env := os.Getenv("ENV")
+	// Load .env file if it exists, but ignore error if it doesn't exist
+	if err := godotenv.Load(); err != nil && !errors.Is(err, os.ErrNotExist) {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
 	tokenID := os.Getenv("BOT_TOKEN")
 	guildID := os.Getenv("GUILD_ID")
 	databasePath := os.Getenv("DATABASE_PATH")

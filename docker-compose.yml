@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  bot:
+    build: .
+    container_name: landoflife-bot
+    env_file:
+      - .env
+    environment:
+      - DATABASE_PATH=/app/data/registrations.db
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

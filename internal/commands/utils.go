@@ -30,29 +30,29 @@ func parseHourOption(options map[string]any, name string) (domain.Hour, error) {
 	value = strings.TrimSpace(strings.ToLower(value))
 
 	switch value {
-	case "1", "01", "0100", "01:00":
+	case "1", "01:00":
 		return domain.Hour0100, nil
-	case "2", "03", "0300", "03:00":
+	case "2", "03:00":
 		return domain.Hour0300, nil
-	case "3", "05", "0500", "05:00":
+	case "3", "05:00":
 		return domain.Hour0500, nil
-	case "4", "07", "0700", "07:00":
+	case "4", "07:00":
 		return domain.Hour0700, nil
-	case "5", "09", "0900", "09:00":
+	case "5", "09:00":
 		return domain.Hour0900, nil
-	case "6", "1100", "11:00":
+	case "6", "11:00":
 		return domain.Hour1100, nil
-	case "7", "1300", "13:00":
+	case "7", "13:00":
 		return domain.Hour1300, nil
-	case "8", "1500", "15:00":
+	case "8", "15:00":
 		return domain.Hour1500, nil
-	case "9", "1700", "17:00":
+	case "9", "17:00":
 		return domain.Hour1700, nil
-	case "10", "1900", "19:00":
+	case "10", "19:00":
 		return domain.Hour1900, nil
-	case "11", "2100", "21:00":
+	case "11", "21:00":
 		return domain.Hour2100, nil
-	case "12", "2300", "23:00":
+	case "12", "23:00":
 		return domain.Hour2300, nil
 	}
 

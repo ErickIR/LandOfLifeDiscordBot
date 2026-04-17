@@ -1,0 +1,9 @@
+.git
+.gitignore
+.env
+**/*_test.go
+**/testdata
+**/vendor
+**/node_modules
+**/*.md
+.DS_Store
